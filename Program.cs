@@ -1,3 +1,5 @@
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +19,7 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
+builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 var app = builder.Build();
 
@@ -26,6 +29,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//Start logging the type of requests comming in like HTTP get request
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
