@@ -61,5 +61,7 @@ namespace UdemyAPIPractice.Migrations
             migrationBuilder.DropTable(
                 name: "Countries");
         }
+
+
     }
 }
