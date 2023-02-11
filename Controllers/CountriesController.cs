@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UdemyAPIPractice.Data;
+using UdemyAPIPractice.Model.Country;
 
 namespace UdemyAPIPractice.Controllers
 {
@@ -24,21 +25,22 @@ namespace UdemyAPIPractice.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Country>>> GetCountries()
         {
-          if (_context.Countries == null)
-          {
-              return NotFound();
-          }
-            return await _context.Countries.ToListAsync();
+            if (_context.Countries == null)
+            {
+                return NotFound();
+            }
+            var countries = await _context.Countries.ToListAsync();
+            return Ok(countries);
         }
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Country>> GetCountry(int id)
         {
-          if (_context.Countries == null)
-          {
-              return NotFound();
-          }
+            if (_context.Countries == null)
+            {
+                return NotFound();
+            }
             var country = await _context.Countries.FindAsync(id);
 
             if (country == null)
@@ -46,7 +48,7 @@ namespace UdemyAPIPractice.Controllers
                 return NotFound();
             }
 
-            return country;
+            return Ok(country);
         }
 
         // PUT: api/Countries/5
@@ -83,12 +85,13 @@ namespace UdemyAPIPractice.Controllers
         // POST: api/Countries
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Country>> PostCountry(Country country)
+        public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createcountry)
         {
-          if (_context.Countries == null)
-          {
-              return Problem("Entity set 'HotelListingDbContext.Countries'  is null.");
-          }
+            var country = new Country
+            {
+                Name = createcountry.Name,
+                ShortName = createcountry.ShortName,
+            };
             _context.Countries.Add(country);
             await _context.SaveChangesAsync();
 

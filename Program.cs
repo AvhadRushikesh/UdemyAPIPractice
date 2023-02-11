@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//Add Database Connection String Created in appsetting.json file
+// Add Database Connection String Created in appsetting.json file
 var connectionString = builder.Configuration.GetConnectionString("HotelListingDbConnectionString");
 builder.Services.AddDbContext<HotelListingDbContext>(options =>
 {
@@ -14,12 +14,12 @@ builder.Services.AddDbContext<HotelListingDbContext>(options =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger / OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-//Adding CORS Policy To The Project
+// Adding CORS Policy To The Project
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -39,13 +39,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//Start logging the type of requests comming in like HTTP get request
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging();  // Start logging the type of requests comming in like HTTP get request
 
 app.UseHttpsRedirection();
 
-//Tell the pipeline to use the policy. / use created CORS
-app.UseCors("AllowAll");
+app.UseCors("AllowAll");    // Tell the pipeline to use the policy. / use created CORS
 
 app.UseAuthorization();
 
