@@ -12,6 +12,8 @@ namespace UdemyAPIPractice.Configurations
             CreateMap<Country, CreateCountryDto>().ReverseMap();    // For POST
             CreateMap<Country, GetCountryDto>().ReverseMap();       // For GET
             CreateMap<Country, CountryDto>().ReverseMap();          // Country Mappping to CountryDto - For Get/ID
+            CreateMap<Country, UpdateCountryDto>().ReverseMap();    // For Put Method to Update Table
+            
             CreateMap<Hotel, HotelDto>().ReverseMap();              // Hotel Mappint to HotelDto - For Hotel List
         }
     }
