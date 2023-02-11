@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,12 @@ namespace UdemyAPIPractice.Controllers
     public class CountriesController : ControllerBase
     {
         private readonly HotelListingDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CountriesController(HotelListingDbContext context)
+        public CountriesController(HotelListingDbContext context, IMapper mapper)
         {
             _context = context;
+            this._mapper = mapper;
         }
 
         // GET: api/Countries
@@ -85,13 +88,10 @@ namespace UdemyAPIPractice.Controllers
         // POST: api/Countries
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createcountry)
+        public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createcountryDto)
         {
-            var country = new Country
-            {
-                Name = createcountry.Name,
-                ShortName = createcountry.ShortName,
-            };
+            var country = _mapper.Map<Country>(createcountryDto); // Auto Mapper
+
             _context.Countries.Add(country);
             await _context.SaveChangesAsync();
 
