@@ -23,7 +23,8 @@ builder.Services.AddSwaggerGen();
 
 
 // Adding CORS Policy To The Project
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("AllowAll",
         b => b.AllowAnyHeader()
         .AllowAnyOrigin()
@@ -38,7 +39,9 @@ builder.Services.AddAutoMapper(typeof(MapperConfig));   // Auto Mapper
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(IGenericRepository<>));
 builder.Services.AddScoped<ICountriesRepository, CountriesRepository>();
 
+// var app = builder.Build();
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -47,11 +50,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging();  // Start logging the type of requests comming in like HTTP get request
+app.UseSerilogRequestLogging();    // Start logging the type of requests comming in like HTTP get request
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");    // Tell the pipeline to use the policy. / use created CORS
+app.UseCors("AllowAll");           // Tell the pipeline to use the policy. / use created CORS
 
 app.UseAuthorization();
 
