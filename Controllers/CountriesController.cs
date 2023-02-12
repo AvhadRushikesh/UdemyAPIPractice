@@ -105,7 +105,8 @@ namespace UdemyAPIPractice.Controllers
         {
             var country = _mapper.Map<Country>(createcountryDto); // Auto Mapper
 
-            _context.Countries.Add(country);
+            //_context.Countries.Add(country);
+            await _context.Countries.AddAsync(country); // Comment the first line & make this change for Repository
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCountry", new { id = country.Id }, country);

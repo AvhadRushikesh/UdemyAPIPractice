@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UdemyAPIPractice.Configurations;
+using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
+using UdemyAPIPractice.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +23,7 @@ builder.Services.AddSwaggerGen();
 
 
 // Adding CORS Policy To The Project
-builder.Services.AddCors(options =>
-{
+builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll",
         b => b.AllowAnyHeader()
         .AllowAnyOrigin()
@@ -32,6 +33,10 @@ builder.Services.AddCors(options =>
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));   // Auto Mapper
+
+// Repository
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(IGenericRepository<>));
+builder.Services.AddScoped<ICountriesRepository, CountriesRepository>();
 
 var app = builder.Build();
 
