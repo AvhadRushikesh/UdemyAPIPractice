@@ -2,6 +2,7 @@
 using UdemyAPIPractice.Data;
 using UdemyAPIPractice.Model.Country;
 using UdemyAPIPractice.Model.Hotel;
+using UdemyAPIPractice.Model.Users;
 
 namespace UdemyAPIPractice.Configurations
 {
@@ -16,6 +17,8 @@ namespace UdemyAPIPractice.Configurations
             
             CreateMap<Hotel, HotelDto>().ReverseMap();              // Hotel Mapping to HotelDto - For Hotel List
             CreateMap<Hotel, CreateHotelDto>().ReverseMap();        // For Creating New Hotel
+
+            CreateMap<ApiUserDto, ApiUser>().ReverseMap();          // For User / Setup Auth Manager for Registration / Security
         }
     }
 }
