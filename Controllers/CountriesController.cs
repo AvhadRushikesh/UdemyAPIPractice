@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace UdemyAPIPractice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]   //  Add Authorization to all methods
     public class CountriesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -27,12 +29,9 @@ namespace UdemyAPIPractice.Controllers
 
         // GET: api/Countries
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
-            //////if (_countriesRepository.GetAllAsync == null)
-            //////{
-            //////    return NotFound();
-            //////}
             var countries = await _countriesRepository.GetAllAsync();
             var records = _mapper.Map<List<GetCountryDto>>(countries);
             return Ok(records);
@@ -40,9 +39,10 @@ namespace UdemyAPIPractice.Controllers
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<CountryDto>> GetCountry(int id)
         {
-            var country = _countriesRepository.GetDetails(id);
+            var country = await _countriesRepository.GetDetails(id);
 
             if (country == null)
             {
@@ -57,13 +57,10 @@ namespace UdemyAPIPractice.Controllers
         // PUT: api/Countries/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
+        [Authorize(Roles = "Administrator,User")]    //  Add Role for Authorization
         public async Task<IActionResult> PutCountry(int id, UpdateCountryDto updateCountryDto)
         {
-            ////////if (id != updateCountryDto.Id)
-            ////////{
-            ////////    return BadRequest();
-            ////////}
-
             //_context.Entry(country).State = EntityState.Modified;
 
             var country = await _countriesRepository.GetAsync(id);
@@ -96,6 +93,7 @@ namespace UdemyAPIPractice.Controllers
         // POST: api/Countries
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createcountryDto)
         {
             var country = _mapper.Map<Country>(createcountryDto); // Auto Mapper
@@ -107,12 +105,9 @@ namespace UdemyAPIPractice.Controllers
 
         // DELETE: api/Countries/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]    //  Add Role for Authorization
         public async Task<IActionResult> DeleteCountry(int id)
         {
-            //////////if (_countriesRepository.GetAsync == null)
-            //////////{
-            //////////    return NotFound();
-            //////////}
             var country = await _countriesRepository.GetAsync(id);
 
             if (country == null)
