@@ -7,5 +7,7 @@ namespace UdemyAPIPractice.Contracts
     {
         Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto);  // Create Or Register User
         Task<AuthResponseDto> Login(LoginDto loginDto);       // Login User
+        Task<string> CreateRefreshToken();
+        Task<AuthResponseDto> VerifyRefreshToken(AuthResponseDto request);
     }
 }
