@@ -1,6 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 using UdemyAPIPractice.Configurations;
 using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
@@ -46,6 +50,37 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<ICountriesRepository, CountriesRepository>();
 builder.Services.AddScoped<IHotelsRepository, HotelsRepository>();
 builder.Services.AddScoped<IAuthManager, AuthManager>();    //  Create API User Account
+
+
+/*  JWT Authentication
+    When token generated we're going to encode some string that we're going to make up or find
+    OR
+    Create Some quote unquote secret key that is used to encode symmetrical key
+    Which will be issued along with token that we're calling issuer signing key
+    So that means if somebody tries to spoof the token but they can't replicate or secret key encoded,
+    then they cannot effectively replicate that token and so even if they try to generate
+    a token, the API would reject it because we're looking at the bearer token
+    related to TokenValidationParameters       */
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // Bearer
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],  // Take from JSON File
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
+    };
+});
+
+
 
 // var app = builder.Build();
 var app = builder.Build();

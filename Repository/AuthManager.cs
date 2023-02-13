@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
 using UdemyAPIPractice.Model.Users;
@@ -10,50 +14,32 @@ namespace UdemyAPIPractice.Repository
     {
         private readonly IMapper _mapper;
         private readonly UserManager<ApiUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public AuthManager(IMapper mapper, UserManager<ApiUser> userManager)
+        public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration)
         {
             this._mapper = mapper;
             this._userManager = userManager;
+            this._configuration = configuration;
         }
 
-        public async Task<bool> Login(LoginDto loginDto)
+        public async Task<AuthResponseDto> Login(LoginDto loginDto)
         {
-            // Login Logic
-            // This Method Validate that the use exists in the System
-            bool isValidUser = false;
+            var user = await _userManager.FindByEmailAsync(loginDto.Email); //  Finde User Name
+            bool isValidUser = await _userManager.CheckPasswordAsync(user, loginDto.Password); //  Find Password
 
-            try
+            if (user == null || isValidUser == false)
             {
-                var user = await _userManager.FindByEmailAsync(loginDto.Email); //  Finde User Name
-                isValidUser = await _userManager.CheckPasswordAsync(user, loginDto.Password); //  Find Password
+                return null;
             }
-            catch (Exception)
-            {
-            }
-            //  If found Successfully return true else false
-            return isValidUser;
 
-            #region Fix Login Logic
-            /*
-             * If the _user object comes back as null, this will lead to a null
-             * exception in the CheckPasswordAsync() method. We can
-             * refactor like this:
-             * 
-             _user = await _userManager.FindByEmailAsync(loginDto.EmailAddress);
-             if (_user is null)
-             {
-                 return default;
-             }
- 
-             bool isValidCredentials = await _userManager.CheckPasswordAsync(_user, loginDto.Password);
- 
-             if (!isValidCredentials)
-             {
-                 return default;
-             }
-             */
-            #endregion
+            var token = await GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                Token = token,
+                UserId = user.Id
+            };
         }
 
         public async Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto)
@@ -69,6 +55,35 @@ namespace UdemyAPIPractice.Repository
             }
 
             return result.Errors;
+        }
+
+        private async Task<string> GenerateToken(ApiUser user)
+        {
+            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+
+            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleClaims = roles.Select(x => new Claim(ClaimTypes.Role, x)).ToList();
+            var userClaims = await _userManager.GetClaimsAsync(user);
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("uid", user.Id),
+            }
+            .Union(userClaims).Union(roleClaims);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JwtSettings:Issuer"],
+                audience: _configuration["JwtSettings:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(Convert.ToInt32(_configuration["JwtSettings:DurationInMinutes"])),
+                signingCredentials: credentials
+                );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
