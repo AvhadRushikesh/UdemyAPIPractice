@@ -16,6 +16,7 @@ namespace UdemyAPIPractice.Controllers
             this._authManager = authManager;
         }
 
+        // Create / Register new API User
         // POST: api/Account/register
         [HttpPost]
         [Route("register")]
@@ -33,6 +34,23 @@ namespace UdemyAPIPractice.Controllers
                     ModelState.AddModelError(error.Code, error.Description);
                 }
                 return BadRequest(ModelState);
+            }
+            return Ok();
+        }
+
+        // Login existing API User
+        // POST: api/Account/login
+        [HttpPost]
+        [Route("login")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            var isValidUser = await _authManager.Login(loginDto);
+            if (!isValidUser)
+            {
+                return Unauthorized();
             }
             return Ok();
         }
