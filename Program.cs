@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,27 @@ builder.Services.AddCors(options =>
         b => b.AllowAnyHeader()
         .AllowAnyOrigin()
         .AllowAnyMethod());
+});
+
+/* Implementing Versioning
+     Setting up like templates to see that these are the ways that the request
+     can come in & Specify which version they intend to use at the time.  */
+builder.Services.AddApiVersioning(Options =>
+{
+    Options.AssumeDefaultVersionWhenUnspecified = true;
+    Options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    Options.ReportApiVersions = true;
+    Options.ApiVersionReader = ApiVersionReader.Combine(
+        new QueryStringApiVersionReader("api-version"),
+        new HeaderApiVersionReader("X-version"),
+        new MediaTypeApiVersionReader("ver")
+        );
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
 
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));

@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace UdemyAPIPractice.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    //[Route("[controller]")]
+    [Route("v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]     //  API Versioning
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
