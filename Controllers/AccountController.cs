@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HotelListing.API.Core.Contracts;
+using HotelListing.API.Core.Model.Users;
 using Microsoft.AspNetCore.Mvc;
-using UdemyAPIPractice.Contracts;
-using UdemyAPIPractice.Model.Users;
 
 namespace UdemyAPIPractice.Controllers
 {

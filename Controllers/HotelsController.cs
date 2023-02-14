@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using HotelListing.API.Core.Contracts;
+using HotelListing.API.Core.Model;
+using HotelListing.API.Core.Model.Hotel;
+using HotelListing.API.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using UdemyAPIPractice.Contracts;
-using UdemyAPIPractice.Data;
-using UdemyAPIPractice.Model;
-using UdemyAPIPractice.Model.Country;
-using UdemyAPIPractice.Model.Hotel;
 
 namespace UdemyAPIPractice.Controllers
 {

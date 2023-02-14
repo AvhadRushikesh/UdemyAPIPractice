@@ -1,17 +1,16 @@
+using HotelListing.API.Core.Configurations;
+using HotelListing.API.Core.Contracts;
+using HotelListing.API.Core.Middleware;
+using HotelListing.API.Core.Repository;
+using HotelListing.API.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
-using UdemyAPIPractice.Configurations;
-using UdemyAPIPractice.Contracts;
-using UdemyAPIPractice.Data;
-using UdemyAPIPractice.Middleware;
-using UdemyAPIPractice.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
