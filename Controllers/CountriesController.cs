@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
+using UdemyAPIPractice.Exceptions;
 using UdemyAPIPractice.Model.Country;
 
 namespace UdemyAPIPractice.Controllers
@@ -48,8 +49,7 @@ namespace UdemyAPIPractice.Controllers
 
             if (country == null)
             {
-                _logger.LogWarning($"Record found in {nameof(GetCountry)} with id: {id}. ");
-                return NotFound();
+                throw new NotFoundException(nameof(GetCountry), id);
             }
 
             var countryDto = _mapper.Map<CountryDto>(country);
@@ -64,12 +64,16 @@ namespace UdemyAPIPractice.Controllers
         [Authorize(Roles = "Administrator,User")]    //  Add Role for Authorization
         public async Task<IActionResult> PutCountry(int id, UpdateCountryDto updateCountryDto)
         {
-            //_context.Entry(country).State = EntityState.Modified;
+            if (id != updateCountryDto.Id)
+            {
+                return BadRequest("Invalid Record Id");
+            }
 
             var country = await _countriesRepository.GetAsync(id);
+
             if (country == null)
             {
-                return NotFound();
+                throw new NotFoundException(nameof(GetCountries), id);
             }
 
             _mapper.Map(updateCountryDto, country); // take data from updateCountryDto and use it to change in country
@@ -115,7 +119,7 @@ namespace UdemyAPIPractice.Controllers
 
             if (country == null)
             {
-                return NotFound();
+                throw new NotFoundException(nameof(GetCountries), id);
             }
 
             await _countriesRepository.DeleteAsync(id);

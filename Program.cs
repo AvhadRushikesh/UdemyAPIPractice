@@ -8,6 +8,7 @@ using System.Text;
 using UdemyAPIPractice.Configurations;
 using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
+using UdemyAPIPractice.Middleware;
 using UdemyAPIPractice.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -94,6 +95,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();   //  Exception Handling
 
 app.UseSerilogRequestLogging();    // Start logging the type of requests comming in like HTTP get request
 
