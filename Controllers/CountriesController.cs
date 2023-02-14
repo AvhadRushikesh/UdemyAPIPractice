@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
 using UdemyAPIPractice.Exceptions;
+using UdemyAPIPractice.Model;
 using UdemyAPIPractice.Model.Country;
 
 namespace UdemyAPIPractice.Controllers
@@ -30,8 +31,8 @@ namespace UdemyAPIPractice.Controllers
             this._logger = logger;
         }
 
-        // GET: api/Countries
-        [HttpGet]
+        // GET: api/Countries/GetAll
+        [HttpGet("GetAll")]
         //[Authorize]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
@@ -39,6 +40,18 @@ namespace UdemyAPIPractice.Controllers
             var records = _mapper.Map<List<GetCountryDto>>(countries);
             return Ok(records);
         }
+
+
+        // Implement Pagging
+        // GET: api/Countries/?StartIndex=0 & PageSize=25 & PageNumber=1
+        [HttpGet]
+        public async Task<ActionResult<PageResult<GetCountryDto>>> GetPageCountries([FromQuery] QueryParameters queryParameters)
+        {
+            var pagecountriesResult = await _countriesRepository.GetAllAsync<GetCountryDto>(queryParameters);
+            return Ok(pagecountriesResult);
+        }
+
+
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
