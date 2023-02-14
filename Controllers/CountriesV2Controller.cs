@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
@@ -32,7 +33,7 @@ namespace UdemyAPIPractice.Controllers
 
         // GET: api/Countries
         [HttpGet]
-        //[Authorize]
+        [EnableQuery]   // api/v2/Countries?$Select=Name  || countries?filter=name eq "Name"
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
             var countries = await _countriesRepository.GetAllAsync();

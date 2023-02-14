@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using UdemyAPIPractice.Contracts;
 using UdemyAPIPractice.Data;
+using UdemyAPIPractice.Model;
+using UdemyAPIPractice.Model.Country;
 using UdemyAPIPractice.Model.Hotel;
 
 namespace UdemyAPIPractice.Controllers
@@ -25,13 +28,25 @@ namespace UdemyAPIPractice.Controllers
             this._mapper = mapper;
         }
 
-        // GET: api/Hotels
-        [HttpGet]
+        // GET: api/Hotels/GetAll
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels()
         {
             var hotels = await _hotelsRepository.GetAllAsync();
             return Ok(_mapper.Map<List<HotelDto>>(hotels));
         }
+
+
+        // Impement Paging
+        // GET: api/Hotels/?StartIndex=0&pagesize=25&PageNumber=1
+        [HttpGet]
+        public async Task<ActionResult<PageResult<HotelDto>>> GetPageHotels([FromQuery]QueryParameters queryParameters)
+        {
+            var PagehotelsResult = await _hotelsRepository.GetAllAsync<HotelDto>(queryParameters);
+            return Ok(PagehotelsResult);
+        }
+
+
 
         // GET: api/Hotels/5
         [HttpGet("{id}")]
