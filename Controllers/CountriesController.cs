@@ -31,9 +31,8 @@ namespace UdemyAPIPractice.Controllers
         //[Authorize]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
-            var countries = await _countriesRepository.GetAllAsync();
-            var records = _mapper.Map<List<GetCountryDto>>(countries);
-            return Ok(records);
+            var countries = await _countriesRepository.GetAllAsync<GetCountryDto>();
+            return Ok(countries);
         }
 
 
@@ -54,15 +53,7 @@ namespace UdemyAPIPractice.Controllers
         public async Task<ActionResult<CountryDto>> GetCountry(int id)
         {
             var country = await _countriesRepository.GetDetails(id);
-
-            if (country == null)
-            {
-                throw new NotFoundException(nameof(GetCountry), id);
-            }
-
-            var countryDto = _mapper.Map<CountryDto>(country);
-
-            return Ok(countryDto);
+            return Ok(country);
         }
 
         // PUT: api/Countries/5
@@ -77,18 +68,9 @@ namespace UdemyAPIPractice.Controllers
                 return BadRequest("Invalid Record Id");
             }
 
-            var country = await _countriesRepository.GetAsync(id);
-
-            if (country == null)
-            {
-                throw new NotFoundException(nameof(GetCountries), id);
-            }
-
-            _mapper.Map(updateCountryDto, country); // take data from updateCountryDto and use it to change in country
-
             try
             {
-                await _countriesRepository.UpdateAsync(country);
+                await _countriesRepository.UpdateAsync(id, updateCountryDto);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -109,13 +91,10 @@ namespace UdemyAPIPractice.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createcountryDto)
+        public async Task<ActionResult<CountryDto>> PostCountry(CreateCountryDto createcountryDto)
         {
-            var country = _mapper.Map<Country>(createcountryDto); // Auto Mapper
-
-            await _countriesRepository.AddAsync(country);
-
-            return CreatedAtAction("GetCountry", new { id = country.Id }, country);
+            var country = await _countriesRepository.AddAsync<CreateCountryDto, GetCountryDto>(createcountryDto);
+            return CreatedAtAction(nameof(GetCountry), new { id = country.Id }, country);
         }
 
         // DELETE: api/Countries/5
@@ -123,15 +102,7 @@ namespace UdemyAPIPractice.Controllers
         [Authorize(Roles = "Administrator")]    //  Add Role for Authorization
         public async Task<IActionResult> DeleteCountry(int id)
         {
-            var country = await _countriesRepository.GetAsync(id);
-
-            if (country == null)
-            {
-                throw new NotFoundException(nameof(GetCountries), id);
-            }
-
             await _countriesRepository.DeleteAsync(id);
-
             return NoContent();
         }
 
