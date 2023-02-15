@@ -25,7 +25,7 @@ namespace UdemyAPIPractice.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels()
         {
-            var hotels = await _hotelsRepository.GetAllAsync<List<HotelDto>>();
+            var hotels = await _hotelsRepository.GetAllAsync<HotelDto>();
             return Ok(hotels);
         }
 
